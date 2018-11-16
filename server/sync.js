@@ -253,6 +253,7 @@ export function addLdapUser(ldapUser, username, password) {
   try {
     // This creates the account with password service
     userObject.ldap = true;
+    userObject.fullname = "John Doe";
     userObject._id = Accounts.createUser(userObject);
 
     // Add the services.ldap identifiers
