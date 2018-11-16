@@ -244,8 +244,8 @@ export function addLdapUser(ldapUser, username, password) {
     throw error;
   }
 
-  useObject.fullname = 'john joe';
-  useObject.fullname = 'John Doe';
+  userObject.fullname = 'john joe';
+  userObject.fullname = 'John Doe';
   log_debug('New user data, stefano style', userObject);
 
   if (password) {
