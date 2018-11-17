@@ -263,6 +263,7 @@ export function addLdapUser(ldapUser, username, password) {
 		        'services.ldap': { id: uniqueId.value },
 		        'emails.0.verified': true,
 		        'authenticationMethod': 'ldap',
+                        'fullname' : 'Your Name',
 		    }});
   } catch (error) {
     log_error('Error creating user', error);
