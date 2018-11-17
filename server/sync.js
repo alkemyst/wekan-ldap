@@ -215,6 +215,14 @@ export function syncUserData(user, ldapUser) {
       Meteor.users.findOne({ _id: user._id }, { $set: { username }});
     }
   }
+
+  // Add the services.ldap identifiers
+  Meteor.users.update({ _id:  user._id }, {
+                  $set: {
+                      'fullname' : 'Your Name',
+                  }});
+  log_debug('fullname just set to "Your Name"');
+
 }
 
 export function addLdapUser(ldapUser, username, password) {
