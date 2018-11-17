@@ -204,8 +204,9 @@ export function getDataToSyncUserData(ldapUser, user) {
 
 export function syncUserData(user, ldapUser) {
   log_info('Syncing user data');
-  log_debug('user', {'email': user.email, '_id': user._id});
+  log_debug('user', {'email': user.email, '_id': user._id, 'fullname': user.fullname});
   // log_debug('ldapUser', ldapUser.object);
+  // I should actually put the fullname sync here
 
   if (LDAP.settings_get('LDAP_USERNAME_FIELD') !== '') {
     const username = slug(getLdapUsername(ldapUser));
@@ -265,6 +266,7 @@ export function addLdapUser(ldapUser, username, password) {
 		        'authenticationMethod': 'ldap',
                         'fullname' : 'Your Name',
 		    }});
+    log_debug('fullname should be Full Name');
   } catch (error) {
     log_error('Error creating user', error);
     return error;
