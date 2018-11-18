@@ -73,13 +73,15 @@ export function getLdapUsername(ldapUser) {
 
 export function getLdapFullname(ldapUser) {
   const fullnameField = LDAP.settings_get('LDAP_FULLNAME_FIELD');
-
+  log_debug('fullnameField = "', fullnameField, '"'); 
   if (fullnameField.indexOf('#{') > -1) {
+    log_debug('there is a strange thing, I will replace it'); 
     return fullnameField.replace(/#{(.+?)}/g, function(match, field) {
       return ldapUser.getValue(field);
     });
   }
 
+  log_debug('there is no strange things: i will just return the fullnameField'); 
   if (ldapUser.getValue(fullnameField) !== '') return ldapUser.getValue(fullnameField);
   else return 'Some kind of Name';
 }
@@ -230,9 +232,12 @@ export function syncUserData(user, ldapUser) {
   }
 
   if (LDAP.settings_get('LDAP_FULLNAME_FIELD') !== '') {
-    const fullname = slug(getLdapFullname(ldapUser));
+    const fullnameUnslug = getLdapFullname(ldapUser);
+    log_debug('fullnameUnslug="',fullnameUnslug,'"');
+    const fullname = slug(fullnameUnslug)
+    log_debug('fullname="',fullname,'"');
     if (user && user._id && fullname !== '') {
-      log_info('Syncing user fullname', '->', fullname);
+      log_info('Syncing user fullname', '-> "', fullname, '"');
       Meteor.users.update({ _id:  user._id }, { $set: { 'profile.fullname' : fullname, }});
     }
   }
