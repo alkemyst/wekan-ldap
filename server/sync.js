@@ -235,7 +235,7 @@ export function syncUserData(user, ldapUser) {
     const fullname= getLdapFullname(ldapUser);
     log_debug('fullname=',fullname);
     if (user && user._id && fullname !== '') {
-      log_info('Syncing user fullname:' fullname);
+      log_info('Syncing user fullname:', fullname);
       Meteor.users.update({ _id:  user._id }, { $set: { 'profile.fullname' : fullname, }});
     }
   }
