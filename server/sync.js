@@ -219,9 +219,9 @@ export function syncUserData(user, ldapUser) {
   // Add the services.ldap identifiers
   Meteor.users.update({ _id:  user._id }, {
                   $set: {
-                      'fullname' : 'Your Name',
+                      'profile.fullname' : 'Your Name',
                   }});
-  log_debug('fullname just set to "Your Name"');
+  log_debug('fullname should be just set to "Your Name"');
 
 }
 
