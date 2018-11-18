@@ -73,17 +73,13 @@ export function getLdapUsername(ldapUser) {
 
 export function getLdapFullname(ldapUser) {
   const fullnameField = LDAP.settings_get('LDAP_FULLNAME_FIELD');
-  log_debug('fullnameField = "', fullnameField, '"'); 
   if (fullnameField.indexOf('#{') > -1) {
-    log_debug('there is a strange thing, I will replace it'); 
     return fullnameField.replace(/#{(.+?)}/g, function(match, field) {
       return ldapUser.getValue(field);
     });
   }
 
-  log_debug('there is no strange things: i will just return the fullnameField'); 
-  if (ldapUser.getValue(fullnameField) !== '') return ldapUser.getValue(fullnameField);
-  else return 'Some kind of Name';
+  return ldapUser.getValue(fullnameField);
 }
 
 export function getLdapUserUniqueID(ldapUser) {
@@ -219,9 +215,8 @@ export function getDataToSyncUserData(ldapUser, user) {
 
 export function syncUserData(user, ldapUser) {
   log_info('Syncing user data');
-  log_debug('user', {'email': user.email, '_id': user._id, 'fullname': user.fullname});
+  log_debug('user', {'email': user.email, '_id': user._id});
   // log_debug('ldapUser', ldapUser.object);
-  // I should actually put the fullname sync here
 
   if (LDAP.settings_get('LDAP_USERNAME_FIELD') !== '') {
     const username = slug(getLdapUsername(ldapUser));
@@ -240,15 +235,6 @@ export function syncUserData(user, ldapUser) {
     }
   }
 
-  // Add the services.ldap identifiers
-//  Meteor.users.update({ _id:  user._id }, {
-//                  $set: {
-//                      'profile.fullname' : 'Your Name',
-//                  }});
-//  log_debug('fullname should be just set to "Your Name"');
-
-  // LDAP_FULLNAME_FIELD should be checked here
-  // also: what is LDAP_SYNC_USER_DATA_FIELDMAP for?
 }
 
 export function addLdapUser(ldapUser, username, password) {
@@ -279,9 +265,7 @@ export function addLdapUser(ldapUser, username, password) {
     throw error;
   }
 
-  userObject.fullname = 'john joe';
-  userObject.fullname = 'John Doe';
-  log_debug('New user data, stefano style', userObject);
+  log_debug('New user data', userObject);
 
   if (password) {
     userObject.password = password;
@@ -298,9 +282,7 @@ export function addLdapUser(ldapUser, username, password) {
 		        'services.ldap': { id: uniqueId.value },
 		        'emails.0.verified': true,
 		        'authenticationMethod': 'ldap',
-                        'fullname' : 'Your Name',
 		    }});
-    log_debug('fullname should be Full Name');
   } catch (error) {
     log_error('Error creating user', error);
     return error;
