@@ -71,6 +71,19 @@ export function getLdapUsername(ldapUser) {
   return ldapUser.getValue(usernameField);
 }
 
+export function getLdapFullname(ldapUser) {
+  const fullnameField = LDAP.settings_get('LDAP_FULLNAME_FIELD');
+
+  if (fullnameField.indexOf('#{') > -1) {
+    return fullnameField.replace(/#{(.+?)}/g, function(match, field) {
+      return ldapUser.getValue(field);
+    });
+  }
+
+  if (ldapUser.getValue(fullnameField) !== '') return ldapUser.getValue(fullnameField);
+  else return 'Some kind of Name';
+}
+
 export function getLdapUserUniqueID(ldapUser) {
   let Unique_Identifier_Field = LDAP.settings_get('LDAP_UNIQUE_IDENTIFIER_FIELD');
 
@@ -216,13 +229,23 @@ export function syncUserData(user, ldapUser) {
     }
   }
 
-  // Add the services.ldap identifiers
-  Meteor.users.update({ _id:  user._id }, {
-                  $set: {
-                      'profile.fullname' : 'Your Name',
-                  }});
-  log_debug('fullname should be just set to "Your Name"');
+  if (LDAP.settings_get('LDAP_FULLNAME_FIELD') !== '') {
+    const fullname = slug(getLdapFullname(ldapUser));
+    if (user && user._id && fullname !== '') {
+      log_info('Syncing user fullname', '->', fullname);
+      Meteor.users.update({ _id:  user._id }, { $set: { 'profile.fullname' : fullname, }});
+    }
+  }
 
+  // Add the services.ldap identifiers
+//  Meteor.users.update({ _id:  user._id }, {
+//                  $set: {
+//                      'profile.fullname' : 'Your Name',
+//                  }});
+//  log_debug('fullname should be just set to "Your Name"');
+
+  // LDAP_FULLNAME_FIELD should be checked here
+  // also: what is LDAP_SYNC_USER_DATA_FIELDMAP for?
 }
 
 export function addLdapUser(ldapUser, username, password) {
